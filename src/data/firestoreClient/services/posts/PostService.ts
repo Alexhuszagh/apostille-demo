@@ -34,7 +34,7 @@ export class PostService implements IPostService {
     }
 
   /**
-   * Updare post
+   * Update post
    */
   public updatePost: (post: Post)
     => Promise<void> = (post) => {

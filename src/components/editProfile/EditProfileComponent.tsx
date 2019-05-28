@@ -174,7 +174,7 @@ export class EditProfileComponent extends Component<IEditProfileComponentProps, 
    */
   constructor(props: IEditProfileComponentProps) {
     super(props)
-    // Defaul state
+    // Default state
     this.state = {
       /**
        * If it's true the winow is in small size

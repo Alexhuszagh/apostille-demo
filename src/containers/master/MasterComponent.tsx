@@ -125,8 +125,8 @@ export class MasterComponent extends Component<IMasterComponentProps, IMasterCom
       <div id='master'>
       <Helmet>
                 <meta charSet='utf-8' />
-                <title>React Social Network</title>
-                <link rel='canonical' href='https://github.com/Qolzam/react-social-network' />
+                <title>Apostille Social Network</title>
+                <link rel='canonical' href='https://github.com/Alexhuszagh/apostille-demo' />
             </Helmet>
        {sendFeedbackStatus ? <SendFeedback /> : ''}
         <div className='master__progress' style={{ display: (progress.visible ? 'block' : 'none') }}>

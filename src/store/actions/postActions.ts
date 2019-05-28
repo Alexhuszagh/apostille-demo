@@ -103,7 +103,10 @@ export const dbAddImagePost = (newPost: Post, callBack: Function) => {
       dispatch(globalActions.hideTopLoading())
 
     })
-      .catch((error: SocialError) => dispatch(globalActions.showMessage(error.message)))
+      .catch((error: SocialError) => {
+        dispatch(globalActions.showMessage(error.message))
+        dispatch(globalActions.hideTopLoading())
+      })
 
   }
 

@@ -209,7 +209,7 @@ export class PostWriteComponent extends Component<IPostWriteComponentProps, IPos
       postText } = this.state
 
     const {
-        id,
+      id,
       ownerAvatar,
       ownerDisplayName,
       edit,

@@ -31,7 +31,7 @@ export class AuthorizeService implements IAuthorizeService {
         const {user} = result
         if (user) {
           return new LoginUser(user.uid, user.emailVerified)
-          
+
         } else {
           throw new SocialError('AuthorizeService/login', 'User object is empty!')
         }
@@ -73,14 +73,14 @@ export class AuthorizeService implements IAuthorizeService {
         const { uid, email } = user
       const registerResult =  await this.storeUserInformation(uid, email!, registerUser.fullName, '')
       return registerResult
-        
+
       } else {
         throw new SocialError('AuthorizeService/login', 'User object is empty!')
       }
     } catch (error) {
       throw new SocialError(error.code, error.message)
     }
-  
+
   }
 
   /**

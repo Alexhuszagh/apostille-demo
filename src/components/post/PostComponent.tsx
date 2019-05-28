@@ -61,8 +61,8 @@ import { IPostComponentProps } from './IPostComponentProps'
 import { IPostComponentState } from './IPostComponentState'
 
 const styles = (theme: any) => ({
-  iconButton: {
-    marginLeft: 5
+  icon: {
+    marginTop: 1
   },
   vote: {
     display: 'flex',
@@ -393,7 +393,7 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
       id,
       disableComments,
       commentCounter,
-      disableSharing ,
+      disableSharing,
     } = post.toJS() as any
     // Define variables
     return (
@@ -457,7 +457,7 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
           {!disableSharing ? (<IconButton
             className={classes.iconButton}
             onClick={this.handleOpenShare}
-            aria-label='Comment'>
+            aria-label='Share'>
             <SvgShare />
           </IconButton>) : ''}
 
