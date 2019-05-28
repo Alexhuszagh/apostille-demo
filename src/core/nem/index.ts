@@ -6,9 +6,14 @@ import {
     PublicKeyFromPrivateKey
 } from './account'
 
-import { CreateSignedApostille } from './apostille'
+import { CreateSignedApostille, VerifyApostille } from './apostille'
 import { ExtractPost } from './models'
-import { PostTransaction } from './network'
+
+import {
+    GetTransactionByHash,
+    GetTransactionStatusByHash,
+    PostTransaction
+} from './network'
 
 export {
     // Account
@@ -20,10 +25,13 @@ export {
 
     // Apostille
     CreateSignedApostille,
+    VerifyApostille,
 
     // Models
     ExtractPost,
 
     // Network
+    GetTransactionByHash,
+    GetTransactionStatusByHash,
     PostTransaction
 }

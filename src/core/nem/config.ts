@@ -9,6 +9,10 @@ export const config = {
     deadline: 10,
     // The units of the duration from the current time for the transaction deadline.
     deadlineUnits: joda.ChronoUnit.MINUTES,
+    // The value of the duration from the current time for the max processing time.
+    processing: 1,
+    // The units of the duration from the current time for the max processing time.
+    processingUnits: joda.ChronoUnit.MINUTES,
     // NEM network type.
     networkType: nem.NetworkType.MIJIN_TEST,
     // URL endpoint to NEM network.

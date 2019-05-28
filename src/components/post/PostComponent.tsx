@@ -47,7 +47,13 @@ import classNames from 'classnames'
 import reactStringReplace from 'react-string-replace'
 
 // Import core functionality
-import { ExtractPost } from 'core/nem'
+import { SocialError } from 'core/domain/common'
+import {
+    GetTransactionByHash,
+    GetTransactionStatusByHash,
+    ExtractPost,
+    VerifyApostille
+} from 'core/nem'
 
 // - Import app icons
 import SvgRejectedPost from 'icons/SvgRejectedPost'
@@ -209,6 +215,7 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
     this.handleReadMore = this.handleReadMore.bind(this)
     this.getOpenCommentGroup = this.getOpenCommentGroup.bind(this)
     this.getPostVerified = this.getPostVerified.bind(this)
+    this.getPostVerifiedCallback = this.getPostVerifiedCallback.bind(this)
     this.handleVote = this.handleVote.bind(this)
     this.handleOpenShare = this.handleOpenShare.bind(this)
     this.handleCloseShare = this.handleCloseShare.bind(this)
@@ -217,6 +224,8 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
     this.handleOpenPostWrite = this.handleOpenPostWrite.bind(this)
     this.handleClosePostWrite = this.handleClosePostWrite.bind(this)
     this.handleOpenComments = this.handleOpenComments.bind(this)
+    this.handleVerifyTooltipOpen = this.handleVerifyTooltipOpen.bind(this)
+    this.handleVerifyTooltipClose = this.handleVerifyTooltipClose.bind(this)
 
     this.getPostVerified()
   }
@@ -267,10 +276,78 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
   }
 
   /**
+   * Handle verification tooltip close.
+   *
+   *
+   * @memberof Post
+   */
+  handleVerifyTooltipClose = () => {
+    this.setState({ isVerifiedTooltipOpen: false })
+  }
+
+  /**
+   * Handle verification tooltip open.
+   *
+   *
+   * @memberof Post
+   */
+  handleVerifyTooltipOpen = () => {
+    this.setState({ isVerifiedTooltipOpen: true })
+  }
+
+  /**
    * Call getPostVerifiedCallback on an interval.
    */
   getPostVerified = () => {
-    return true
+    // Load post verification using an interval
+    // Set the interval to 15 seconds, block inclusion is slow.
+    this.getPostVerifiedCallback()
+    const timer = setInterval(() => {
+      if (this.state.isPostVerifiedLoaded) {
+        clearInterval(timer)
+      } else {
+        this.getPostVerifiedCallback()
+      }
+    }, 15000)
+  }
+
+  /**
+   * Load if the post is verified using apostille
+   */
+  getPostVerifiedCallback = () => {
+    const hash = this.props.post.get('postTransactionHash', '')
+    const post = this.props.post.toJS()
+    const content = ExtractPost(post)
+
+    GetTransactionStatusByHash(hash)
+      .then((status: any) => {
+        if (status.group === 'confirmed') {
+          // Response is confirmed, verify the data.
+          GetTransactionByHash(hash)
+            .then((transaction: any) => {
+              if (VerifyApostille(transaction, post)) {
+                this.setState({isPostVerified: true, isPostVerifiedLoaded: true})
+              } else {
+                this.setState({isPostVerified: false, isPostVerifiedLoaded: true})
+              }
+            })
+            .catch((error: any) => {
+              this.setState({isPostVerified: false, isPostVerifiedLoaded: true})
+              console.error(`nem/GetTransactionByHash: Error in NEM API, hash is: ${hash}.`)
+            })
+        } else if (status.group === 'unconfirmed') {
+          // Not yet posted.
+          this.setState({isPostVerified: false, isPostVerifiedLoaded: false})
+        } else if (status.group === 'failed') {
+          // Failed to post, some NEM node error.
+          // Should likely further handle here.
+          this.setState({isPostVerified: false, isPostVerifiedLoaded: true})
+        }
+      })
+      .catch((error: any) => {
+        this.setState({isPostVerified: false, isPostVerifiedLoaded: true})
+        console.error(`nem/GetTransactionStatusByHash: Error in NEM API, hash is: ${hash}.`)
+      })
   }
 
   /**
@@ -399,6 +476,7 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
   render () {
     const { post, setHomeTitle, goTo, fullName, isPostOwner, commentList, classes , translate} = this.props
     const { postMenuAnchorEl, isPostMenuOpen, isPostVerified, isPostVerifiedLoaded } = this.state
+    const postTxHash = 'TX Hash: ' + post.get('postTransactionHash', '')
     const rightIconMenu = (
       <div>
         <IconButton
@@ -407,18 +485,30 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
           <MoreVertIcon />
         </IconButton>
         {isPostVerifiedLoaded ?
-            isPostVerified ?
-              (<Icon
-                className={classes.icon}
-                aria-label='Verified'>
-                <SvgVerifiedPost style={{ fill: '#00A6FF' }} />
-              </Icon>) :
-              (<Icon
-                className={classes.icon}
-                aria-label='Rejected'>
-                <SvgRejectedPost style={{ fill: '#FF6977' }} />
-              </Icon>)
-            : ''
+              <Tooltip
+                enterDelay={300}
+                id='tooltip-controlled'
+                leaveDelay={300}
+                onClose={this.handleVerifyTooltipClose}
+                onOpen={this.handleVerifyTooltipOpen}
+                open={this.state.isVerifiedTooltipOpen}
+                placement='bottom'
+                title={postTxHash}
+              >
+                {isPostVerified ?
+                  (<Icon
+                    className={classes.icon}
+                    aria-label='Verified'>
+                    <SvgVerifiedPost style={{ fill: '#00A6FF' }} />
+                  </Icon>) :
+                  (<Icon
+                    className={classes.icon}
+                    aria-label='Rejected'>
+                    <SvgRejectedPost style={{ fill: '#FF6977' }} />
+                  </Icon>)
+                }
+              </Tooltip>
+              : ''
             }
 
           <Menu
