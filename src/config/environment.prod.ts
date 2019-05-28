@@ -2,12 +2,13 @@ import { LanguageType } from 'store/reducers/locale/langugeType'
 
 export const environment = {
   firebase: {
-    apiKey: 'AIzaSyAHOZ7rWGDODCwJMB3WIt63CAIa90qI-jg',
-    authDomain: 'test-4515a.firebaseapp.com',
-    databaseURL: 'https://test-4515a.firebaseio.com',
-    projectId: 'test-4515a',
-    storageBucket: 'test-4515a.appspot.com',
-    messagingSenderId: '964743099489'
+    apiKey: 'AIzaSyDmPyDOpac8zN7Zddm4KBMq2nWhiFNFR8k',
+    authDomain: 'nem-apostille-social-39f6a.firebaseapp.com',
+    databaseURL: 'https://nem-apostille-social-39f6a.firebaseio.com',
+    projectId: 'nem-apostille-social-39f6a',
+    storageBucket: 'nem-apostille-social-39f6a.appspot.com',
+    messagingSenderId: '459525480120',
+    appId: '1:459525480120:web:c3256b7d13ff071c'
   },
   settings: {
     enabledOAuthLogin: true,
