@@ -212,6 +212,8 @@ export class PostWriteComponent extends Component<IPostWriteComponentProps, IPos
       id,
       ownerAvatar,
       ownerDisplayName,
+      ownerPrivateKey,
+      postTransactionHash,
       edit,
       onRequestClose,
       post,
@@ -237,6 +239,8 @@ export class PostWriteComponent extends Component<IPostWriteComponentProps, IPos
           imageFullPath: imageFullPath,
           ownerAvatar: ownerAvatar,
           ownerDisplayName: ownerDisplayName,
+          ownerPrivateKey: ownerPrivateKey,
+          postTransactionHash: postTransactionHash,
           disableComments: disableComments,
           disableSharing: disableSharing,
           postTypeId: 1,
@@ -249,6 +253,8 @@ export class PostWriteComponent extends Component<IPostWriteComponentProps, IPos
           tags: tags,
           ownerAvatar: ownerAvatar,
           ownerDisplayName: ownerDisplayName,
+          ownerPrivateKey: ownerPrivateKey,
+          postTransactionHash: postTransactionHash,
           disableComments: disableComments,
           disableSharing: disableSharing,
           postTypeId: 0,
@@ -601,7 +607,8 @@ const mapStateToProps = (state: Map<string, any>, ownProps: IPostWriteComponentP
     translate: getTranslate(state.get('locale')),
     postImageState: state.getIn(['imageGallery', 'status']),
     ownerAvatar: user.avatar || '',
-    ownerDisplayName: user.fullName || ''
+    ownerDisplayName: user.fullName || '',
+    ownerPrivateKey: user.privateKey || ''
   }
 }
 

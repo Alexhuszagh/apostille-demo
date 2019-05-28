@@ -52,6 +52,16 @@ export interface IPostComponentState {
   openCommentGroup?: () => void
 
   /**
+   * Whether post is verified from NEM apostille
+   */
+  isPostVerified?: boolean
+
+  /**
+   * Whether post is verified from NEM apostille
+   */
+  isPostVerifiedLoaded?: boolean
+
+  /**
    * Post menu anchor element
    */
   postMenuAnchorEl?: any
@@ -60,4 +70,14 @@ export interface IPostComponentState {
    * Whether post menu open
    */
   isPostMenuOpen?: boolean
+
+  /**
+   * Whether the verified tooltip is open.
+   */
+  isVerifiedTooltipOpen?: boolean
+
+  /**
+   * Previous post component state
+   */
+  postPreviousState?: string
 }

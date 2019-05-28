@@ -7,6 +7,7 @@ export class Profile extends BaseDomain {
     public banner: string,
     public tagLine: string,
     public creationDate: number,
+    public privateKey: string,
     public email?: string | null,
     public birthday?: number,
     public webUrl?: string,

@@ -33,16 +33,25 @@ import MenuList from '@material-ui/core/MenuList'
 import MenuItem from '@material-ui/core/MenuItem'
 import TextField from '@material-ui/core/TextField'
 import Dialog from '@material-ui/core/Dialog'
+import Icon from '@material-ui/core/Icon'
 import IconButton from '@material-ui/core/IconButton'
 import MoreVertIcon from '@material-ui/icons/MoreVert'
 import ListItemIcon from '@material-ui/core/ListItemIcon'
 import ListItemText from '@material-ui/core/ListItemText'
+import Tooltip from '@material-ui/core/Tooltip'
 import { withStyles } from '@material-ui/core/styles'
 import Grow from '@material-ui/core/Grow'
 import ClickAwayListener from '@material-ui/core/ClickAwayListener'
 import classNames from 'classnames'
 
 import reactStringReplace from 'react-string-replace'
+
+// Import core functionality
+import { ExtractPost } from 'core/nem'
+
+// - Import app icons
+import SvgRejectedPost from 'icons/SvgRejectedPost'
+import SvgVerifiedPost from 'icons/SvgVerifiedPost'
 
 // - Import app components
 import CommentGroup from 'components/commentGroup'
@@ -63,6 +72,9 @@ import { IPostComponentState } from './IPostComponentState'
 const styles = (theme: any) => ({
   icon: {
     marginTop: 1
+  },
+  iconButton: {
+    marginLeft: 5
   },
   vote: {
     display: 'flex',
@@ -167,18 +179,36 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
        */
       openPostWrite: false,
       /**
+       * Whether post is verified from NEM apostille
+       */
+      isPostVerified: false,
+
+      /**
+       * Whether post is verified from NEM apostille
+       */
+      isPostVerifiedLoaded: false,
+      /**
        * Post menu anchor element
        */
       postMenuAnchorEl: null,
       /**
        * Whether post menu open
        */
-      isPostMenuOpen: false
+      isPostMenuOpen: false,
+      /**
+       * Whether the verified tooltip is open.
+       */
+      isVerifiedTooltipOpen: false,
+      /**
+       * Previous post component state
+       */
+      postPreviousState: undefined
     }
 
     // Binding functions to this
     this.handleReadMore = this.handleReadMore.bind(this)
     this.getOpenCommentGroup = this.getOpenCommentGroup.bind(this)
+    this.getPostVerified = this.getPostVerified.bind(this)
     this.handleVote = this.handleVote.bind(this)
     this.handleOpenShare = this.handleOpenShare.bind(this)
     this.handleCloseShare = this.handleCloseShare.bind(this)
@@ -187,6 +217,8 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
     this.handleOpenPostWrite = this.handleOpenPostWrite.bind(this)
     this.handleClosePostWrite = this.handleClosePostWrite.bind(this)
     this.handleOpenComments = this.handleOpenComments.bind(this)
+
+    this.getPostVerified()
   }
 
   /**
@@ -209,7 +241,9 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
    *
    */
   handleOpenPostWrite = () => {
+    const { post } = this.props
     this.setState({
+      postPreviousState: ExtractPost(post.toJS()),
       openPostWrite: true
     })
   }
@@ -220,8 +254,23 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
    */
   handleClosePostWrite = () => {
     this.setState({
-      openPostWrite: false
+      openPostWrite: false,
+      isPostVerifiedLoaded: false
     })
+
+    // trigger the update callback
+    const { post } = this.props
+    if (this.state.postPreviousState !== ExtractPost(post.toJS())) {
+      this.setState({postPreviousState: undefined})
+      this.getPostVerified()
+    }
+  }
+
+  /**
+   * Call getPostVerifiedCallback on an interval.
+   */
+  getPostVerified = () => {
+    return true
   }
 
   /**
@@ -349,7 +398,7 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
    */
   render () {
     const { post, setHomeTitle, goTo, fullName, isPostOwner, commentList, classes , translate} = this.props
-    const { postMenuAnchorEl, isPostMenuOpen } = this.state
+    const { postMenuAnchorEl, isPostMenuOpen, isPostVerified, isPostVerifiedLoaded } = this.state
     const rightIconMenu = (
       <div>
         <IconButton
@@ -357,6 +406,20 @@ export class PostComponent extends Component<IPostComponentProps, IPostComponent
         >
           <MoreVertIcon />
         </IconButton>
+        {isPostVerifiedLoaded ?
+            isPostVerified ?
+              (<Icon
+                className={classes.icon}
+                aria-label='Verified'>
+                <SvgVerifiedPost style={{ fill: '#00A6FF' }} />
+              </Icon>) :
+              (<Icon
+                className={classes.icon}
+                aria-label='Rejected'>
+                <SvgRejectedPost style={{ fill: '#FF6977' }} />
+              </Icon>)
+            : ''
+            }
 
           <Menu
             open={isPostMenuOpen!}

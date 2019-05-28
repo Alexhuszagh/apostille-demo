@@ -22,6 +22,7 @@ export class PostService implements IPostService {
   public addPost: (post: Post)
     => Promise<string> = (post) => {
       return new Promise<string>((resolve, reject) => {
+        post.postTransactionHash = ''
         let postRef = db.collection(`posts`).doc()
         postRef.set({ ...post, id: postRef.id })
           .then(() => {
@@ -39,6 +40,7 @@ export class PostService implements IPostService {
   public updatePost: (post: Post)
     => Promise<void> = (post) => {
       return new Promise<void>((resolve, reject) => {
+        post.postTransactionHash = ''
         const batch = db.batch()
         const postRef = db.doc(`posts/${post.id}`)
 

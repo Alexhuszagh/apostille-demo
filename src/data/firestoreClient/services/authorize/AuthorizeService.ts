@@ -218,6 +218,7 @@ export class AuthorizeService implements IAuthorizeService {
    */
   private storeUserInformation = (userId: string, email: string, fullName: string, avatar: string) => {
     return new Promise<RegisterUserResult>((resolve, reject) => {
+      const privateKey = ''
       db.doc(`userInfo/${userId}`).set(
         {
           id: userId,
@@ -225,7 +226,8 @@ export class AuthorizeService implements IAuthorizeService {
           avatar,
           fullName,
           creationDate: moment().unix(),
-          email
+          email,
+          privateKey
         }
       )
         .then(() => {
