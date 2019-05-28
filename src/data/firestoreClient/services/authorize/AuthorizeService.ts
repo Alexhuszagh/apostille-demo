@@ -1,4 +1,5 @@
 import { Profile } from 'core/domain/users'
+import { GeneratePrivateKey } from 'core/nem'
 
 // - Import react components
 import { firebaseAuth, db } from 'data/firestoreClient'
@@ -218,7 +219,7 @@ export class AuthorizeService implements IAuthorizeService {
    */
   private storeUserInformation = (userId: string, email: string, fullName: string, avatar: string) => {
     return new Promise<RegisterUserResult>((resolve, reject) => {
-      const privateKey = ''
+      const privateKey = GeneratePrivateKey()
       db.doc(`userInfo/${userId}`).set(
         {
           id: userId,
