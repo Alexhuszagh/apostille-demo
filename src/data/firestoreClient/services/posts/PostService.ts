@@ -3,6 +3,7 @@ import { firebaseAuth, db } from 'data/firestoreClient'
 
 import { SocialError } from 'core/domain/common'
 import { Post } from 'core/domain/posts'
+import { CreateSignedApostille, PostTransaction } from 'core/nem'
 import { IPostService } from 'core/services/posts'
 import { IServiceProvider } from 'core/factories'
 import { ICommentService } from 'core/services/comments'
@@ -22,15 +23,26 @@ export class PostService implements IPostService {
   public addPost: (post: Post)
     => Promise<string> = (post) => {
       return new Promise<string>((resolve, reject) => {
-        post.postTransactionHash = ''
-        let postRef = db.collection(`posts`).doc()
-        postRef.set({ ...post, id: postRef.id })
-          .then(() => {
-            resolve(postRef.id)
-          })
-          .catch((error: any) => {
-            reject(new SocialError(error.code, error.message))
-          })
+        if (post.ownerPrivateKey === undefined) {
+          reject(new SocialError(`nem/privateKey`, `PostService/addPost : Private key is undefined.`))
+        } else {
+          const apostille = CreateSignedApostille(post)
+          PostTransaction(apostille)
+            .then((response: any) => {
+              post.postTransactionHash = apostille.hash
+              let postRef = db.collection(`posts`).doc()
+              postRef.set({ ...post, id: postRef.id })
+                .then(() => {
+                  resolve(postRef.id)
+                })
+                .catch((error: any) => {
+                  reject(new SocialError(error.code, error.message))
+                })
+            })
+            .catch((error: any) => {
+              reject(new SocialError('nem/addPost', 'Error in NEM API.'))
+            })
+        }
       })
     }
 
@@ -40,17 +52,28 @@ export class PostService implements IPostService {
   public updatePost: (post: Post)
     => Promise<void> = (post) => {
       return new Promise<void>((resolve, reject) => {
-        post.postTransactionHash = ''
         const batch = db.batch()
         const postRef = db.doc(`posts/${post.id}`)
 
-        batch.update(postRef, { ...post })
-        batch.commit().then(() => {
-          resolve()
-        })
-          .catch((error: any) => {
-            reject(new SocialError(error.code, error.message))
-          })
+        if (post.ownerPrivateKey === undefined) {
+          reject(new SocialError(`nem/privateKey`, `PostService/updatePost : Private key is undefined.`))
+        } else {
+          const apostille = CreateSignedApostille(post)
+          PostTransaction(apostille)
+            .then((response: any) => {
+              post.postTransactionHash = apostille.hash
+              batch.update(postRef, { ...post })
+              batch.commit().then(() => {
+                resolve()
+              })
+                .catch((error: any) => {
+                  reject(new SocialError(error.code, error.message))
+                })
+            })
+            .catch((error: any) => {
+              reject(new SocialError('nem/updatePost', 'Error in NEM API.'))
+            })
+        }
       })
     }
 

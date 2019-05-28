@@ -6,7 +6,9 @@ import {
     PublicKeyFromPrivateKey
 } from './account'
 
+import { CreateSignedApostille } from './apostille'
 import { ExtractPost } from './models'
+import { PostTransaction } from './network'
 
 export {
     // Account
@@ -16,6 +18,12 @@ export {
     GeneratePrivateKey,
     PublicKeyFromPrivateKey,
 
+    // Apostille
+    CreateSignedApostille,
+
     // Models
     ExtractPost,
+
+    // Network
+    PostTransaction
 }
